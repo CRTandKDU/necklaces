@@ -1,3 +1,4 @@
+# Drawing evolutions of Arrighi's Necklaces
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt

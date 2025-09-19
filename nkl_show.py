@@ -21,9 +21,11 @@ if __name__ == '__main__':
                         help='The number of steps to evolve (default: %(default)s.).') 
     parser.add_argument('-w', '--wide', type=int, default=64,
                         help='The initial width of pearls (default: %(default)s.).') 
+    parser.add_argument('-r', '--reverse', action='store_true',
+                        help='If present, evolves towards past.') 
     args = parser.parse_args()
     #
-    N, W  = args.size, args.wide
+    N, W, FRWRD  = args.size, args.wide, False if args.reverse else True
     nl = nkl.Necklace(N, W)
     nl.from_int( args.init )
     # Set up display
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     ax.yaxis.set_visible(False)
     ax.xaxis.set_visible(False)
     ax.set_axis_off()
-    x, y, h = W, 0, 2
+    x, y, h = W, 0, 1
     for generation in range( args.gens ):
         # Build current state as a line array
         arr = np.zeros( (nl.current_size,2), dtype=np.ushort )
@@ -67,6 +69,9 @@ if __name__ == '__main__':
                  verticalalignment='bottom' )
         #
         y += h
-        nl.step()
+        if FRWRD :
+            nl.step()
+        else:
+            nl.unstep()
     #
     plt.show()

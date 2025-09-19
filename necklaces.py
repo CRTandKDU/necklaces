@@ -8,7 +8,7 @@ class DLPearl:
         self.n, self.p = None, None
         self.L, self.R = False, False
         self.idx       = idx
-        self.width     = 64
+        self.width     = w
 
     
 class Necklace:
@@ -97,6 +97,17 @@ class Necklace:
         self.cursor.p.L = keep
 
 
+    def tr_unroll( self ):
+        keep = self.cursor.p.L
+        curp = None
+        while curp != self.cursor.p :
+            if None == curp:
+                curp = self.cursor.p
+            curp.L = curp.p.L
+            curp = curp.p
+        self.cursor.L = keep
+        
+
     def tr_reduce( self ):
         cur, curnext = None, None
         while self.cursor != cur:
@@ -156,6 +167,13 @@ class Necklace:
             self.tr_expand()
             self.tr_roll()
 
+
+    def unstep( self, n=1 ):
+        for i in range(n):
+            self.tr_unroll()
+            self.tr_expand()
+            self.tr_reduce()
+
 # Some simple dataviz
 
 def fileto_eplot( arr ):
@@ -167,22 +185,31 @@ def fileto_eplot( arr ):
 if __name__ == '__main__':
     # rng = np.random.default_rng()
     N   = 5
+    nl = Necklace(N,64)
+    nl.from_int(143)
+    print( "INIT>", nl.as_int(), nl.current_size )
+    nl.step()
+    nl.step()
+    print( "ROLL>", nl.as_int(), nl.current_size )
+    nl.unstep()
+    nl.unstep()
+    print( "UNRO>", nl.as_int(), nl.current_size )
     #
-    hmax, harg = 0, 0
-    hsize = np.zeros( 2*N+1 )
-    for x in range( 1 << (2*N+1) ):
-        nl  = Necklace(N, 64)
-        nl.from_int(x)
-        nl.step()
-        y = nl.as_int()
-        #
-        if( y > hmax ):
-            hmax, harg = y, x
-        hsize[nl.current_size] += 1
-        print( f'{x}, {y}, {nl.current_size}' )
-        del nl
-    print( f'Max: x={harg}, y={hmax}' )
-    fileto_eplot( hsize )
+    # hmax, harg = 0, 0
+    # hsize = np.zeros( 2*N+1 )
+    # for x in range( 1 << (2*N+1) ):
+    #     nl  = Necklace(N, 64)
+    #     nl.from_int(x)
+    #     nl.step()
+    #     y = nl.as_int()
+    #     #
+    #     if( y > hmax ):
+    #         hmax, harg = y, x
+    #     hsize[nl.current_size] += 1
+    #     print( f'{x}, {y}, {nl.current_size}' )
+    #     del nl
+    # print( f'Max: x={harg}, y={hmax}' )
+    # fileto_eplot( hsize )
     #
     
         

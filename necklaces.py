@@ -89,7 +89,7 @@ class Necklace:
                 
 # Transition rules
 
-    def tr_roll( self ):
+    def tr_roll_left( self ):
         keep = self.cursor.L
         it   = iter(self)
         for pearl in it:
@@ -97,7 +97,7 @@ class Necklace:
         self.cursor.p.L = keep
 
 
-    def tr_unroll( self ):
+    def tr_unroll_left( self ):
         keep = self.cursor.p.L
         curp = None
         while curp != self.cursor.p :
@@ -106,7 +106,26 @@ class Necklace:
             curp.L = curp.p.L
             curp = curp.p
         self.cursor.L = keep
+
+
+    def tr_roll_right( self ):
+        keep = self.cursor.p.R
+        curp = None
+        while curp != self.cursor.p :
+            if None == curp:
+                curp = self.cursor.p
+            curp.R = curp.p.R
+            curp = curp.p
+        self.cursor.R = keep
+
         
+    def tr_unroll_right( self ):
+        keep = self.cursor.R
+        it   = iter(self)
+        for pearl in it:
+            pearl.R = pearl.n.R
+        self.cursor.p.R = keep
+
 
     def tr_reduce( self ):
         cur, curnext = None, None
@@ -127,7 +146,7 @@ class Necklace:
                     self.cursor = pearl
                 else:
                     if self.cursor == curnext:
-                        self.cursor = new_cur
+                        self.cursor = pearl # new_cur
                 del cur
                 del curnext
                 self.current_size -= 1
@@ -165,14 +184,16 @@ class Necklace:
         for i in range(n):
             self.tr_reduce()
             self.tr_expand()
-            self.tr_roll()
+            # self.tr_roll_right()
+            self.tr_roll_left()
 
 
     def unstep( self, n=1 ):
         for i in range(n):
-            self.tr_unroll()
-            self.tr_expand()
+            # self.tr_unroll_right()
+            self.tr_unroll_left()
             self.tr_reduce()
+            self.tr_expand()
 
 # Some simple dataviz
 
